@@ -1,0 +1,182 @@
+/* ============================================
+   HERO styles (used by components/Hero.js)
+   ============================================ */
+.hero {
+  /* soft gradient: pale sky at top fading to off-white */
+  background: linear-gradient(180deg, var(--color-primary-pale) 0%, var(--color-off-white) 100%);
+  padding: 72px 24px 80px; /* natural height — no forced full screen */
+}
+
+.hero-inner {
+  max-width: 1060px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* text left, card right */
+  gap: 64px;
+}
+
+.hero-text {
+  max-width: 560px; /* stops text drifting into the empty middle */
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-white);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary-pale);
+  padding: 8px 16px;
+  border-radius: 999px; /* fully rounded = pill shape */
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-teal);
+}
+
+.hero-text h1 {
+  font-size: 42px;
+  line-height: 1.2;
+  color: var(--color-text-dark);
+  margin-bottom: 16px;
+}
+
+.highlight {
+  color: var(--color-primary-mid);
+  white-space: nowrap; /* "Move Better" always stays on one line */
+}
+
+.hero-tagline {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--color-text-mid);
+  margin-bottom: 28px;
+  max-width: 460px; /* keeps line length readable */
+}
+
+.hero-buttons {
+  display: flex;
+  flex-wrap: wrap; /* buttons drop to next line on small screens */
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+/* Stats row */
+.hero-stats {
+  display: flex;
+  gap: 48px;
+}
+
+.stat strong {
+  display: block;
+  font-size: 26px;
+  font-family: var(--font-heading);
+  color: var(--color-primary);
+}
+
+.stat span {
+  font-size: 14px;
+  color: var(--color-text-light);
+}
+
+/* Doctor card */
+.doctor-card {
+  background: var(--color-white);
+  border-radius: 16px;
+  border-top: 4px solid var(--color-teal); /* brand accent strip */
+  box-shadow: var(--shadow-lg);
+  padding: 40px 32px;
+  text-align: center;
+  width: 360px;
+  flex-shrink: 0; /* never gets squeezed by the text column */
+}
+
+.doctor-avatar {
+  font-family: var(--font-heading);
+  font-size: 38px;
+  font-weight: 700;
+  color: var(--color-white);
+  width: 100px;
+  height: 100px;
+  line-height: 100px;      /* centers initials vertically */
+  margin: 0 auto 20px;     /* centers the circle horizontally */
+  /* brand gradient: navy into teal */
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-teal) 100%);
+  border-radius: 50%;      /* perfect circle */
+}
+
+.doctor-card h3 {
+  font-size: 24px;
+  color: var(--color-primary);
+}
+
+.doctor-degree {
+  color: var(--color-teal);
+  font-weight: 500;
+  margin: 4px 0 12px;
+}
+
+.doctor-note {
+  font-size: 14px;
+  color: var(--color-text-mid);
+  margin-bottom: 16px;
+}
+
+.doctor-hours {
+  background: var(--color-off-white);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  color: var(--color-text-mid);
+}
+
+/* Mobile rules (screens under 900px) */
+@media (max-width: 900px) {
+  .hero {
+    padding: 40px 20px 56px;
+    min-height: auto; /* natural height on phones */
+  }
+  .hero-inner {
+    flex-direction: column; /* stack text above the card */
+    gap: 40px;
+  }
+  .hero-text {
+    text-align: center; /* centered reads better on phones */
+  }
+  .hero-text h1 {
+    font-size: 34px;
+  }
+  .hero-tagline {
+    font-size: 16px;
+    margin-left: auto;  /* keeps the text block centered */
+    margin-right: auto;
+  }
+  .hero-buttons {
+    flex-direction: column; /* stacked, full-width buttons */
+    margin-bottom: 36px;
+  }
+  .hero-buttons .btn {
+    width: 100%;
+    padding: 14px;      /* bigger tap target for thumbs */
+    font-size: 16px;
+    text-align: center;
+  }
+  .hero-stats {
+    justify-content: center;
+    flex-wrap: wrap; /* stats drop to a second line if too wide */
+    gap: 20px 32px;  /* row gap 20, column gap 32 */
+    text-align: center;
+  }
+  .doctor-card {
+    width: 100%;
+    max-width: 360px;
+  }
+}

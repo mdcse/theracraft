@@ -1,0 +1,121 @@
+/* ============================================
+   SERVICES styles (used by components/Services.js)
+   ============================================ */
+.services {
+  background: var(--color-white);
+  padding: 80px 24px;
+}
+
+.services-inner {
+  max-width: 1150px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Section heading pattern (reused visual language) */
+.section-eyebrow {
+  color: var(--color-teal);
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px; /* spaced-out caps = refined look */
+  margin-bottom: 10px;
+}
+
+.section-title {
+  font-size: 34px;
+  color: var(--color-text-dark);
+  margin-bottom: 12px;
+}
+
+.section-sub {
+  color: var(--color-text-mid);
+  font-size: 16px;
+  margin-bottom: 48px;
+}
+
+/* Responsive grid: 4 columns that shrink automatically */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
+  gap: 20px;
+  text-align: left;
+}
+
+.service-card {
+  background: var(--color-off-white);
+  border: 1px solid var(--color-primary-pale);
+  border-radius: 14px;
+  padding: 26px 22px;
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+}
+
+.service-card:hover {
+  transform: translateY(-5px); /* card floats up */
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-teal);
+  background: var(--color-white);
+}
+
+.service-icon {
+  font-size: 26px;
+  width: 52px;
+  height: 52px;
+  line-height: 52px;
+  text-align: center;
+  background: var(--color-primary-pale);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.service-card h3 {
+  font-family: var(--font-body); /* smaller headings read better in sans */
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-dark);
+  margin-bottom: 8px;
+}
+
+.service-card p {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-mid);
+}
+
+/* Tablet: 2 columns */
+@media (max-width: 1024px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile: single column, tighter spacing */
+@media (max-width: 600px) {
+  .services {
+    padding: 56px 20px;
+  }
+  .section-title {
+    font-size: 27px;
+  }
+  .section-sub {
+    margin-bottom: 32px;
+  }
+  .services-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .service-card {
+    display: flex;          /* icon beside text saves vertical space */
+    align-items: flex-start;
+    gap: 16px;
+    padding: 18px;
+  }
+  .service-icon {
+    flex-shrink: 0;         /* icon keeps its size */
+    margin-bottom: 0;
+  }
+  .service-body {
+    flex: 1;                /* title + text share one wide column */
+    min-width: 0;           /* lets text wrap normally instead of squishing */
+  }
+}

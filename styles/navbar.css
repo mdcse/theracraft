@@ -1,0 +1,95 @@
+/* ============================================
+   NAVBAR styles (used by components/Navbar.js)
+   ============================================ */
+.navbar {
+  position: sticky;   /* stays at top while scrolling */
+  top: 0;
+  z-index: 50;        /* sits above other content */
+  background: var(--color-white);
+  box-shadow: var(--shadow-sm);
+}
+
+.navbar-inner {
+  max-width: 1200px;  /* content never wider than this */
+  margin: 0 auto;     /* center it horizontally */
+  padding: 16px 24px;
+  display: flex;                   /* items in a row */
+  align-items: center;             /* vertically centered */
+  justify-content: space-between;  /* logo left, rest right */
+}
+
+.logo {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.logo-sub {
+  display: block; /* forces it onto its own line */
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-text-mid);
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px; /* space between each link */
+}
+
+.nav-links a {
+  color: var(--color-text-mid);
+  transition: color 0.2s; /* smooth color change on hover */
+}
+
+.nav-links a:hover {
+  color: var(--color-primary-mid);
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+/* Hamburger hidden on desktop */
+.hamburger {
+  display: none;
+  color: var(--color-primary);
+}
+
+/* Mobile dropdown menu */
+.mobile-menu {
+  background: var(--color-white);
+  border-top: 1px solid var(--color-primary-pale);
+  padding: 16px 24px;
+}
+
+.mobile-menu ul {
+  display: flex;
+  flex-direction: column; /* links stacked vertically */
+  gap: 16px;
+}
+
+.mobile-menu ul a {
+  color: var(--color-text-mid);
+}
+
+.mobile-buttons {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+}
+
+/* Mobile rules (screens under 900px) */
+@media (max-width: 900px) {
+  .nav-links,
+  .nav-buttons {
+    display: none; /* hide desktop links/buttons */
+  }
+  .hamburger {
+    display: block; /* show hamburger instead */
+  }
+}
