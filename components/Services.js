@@ -23,8 +23,13 @@ const services = [
   },
   {
     icon: "🫧",
-    title: "Cupping Therapy",
-    desc: "Improves blood flow and releases deep muscle tension.",
+    title: "Dry Cupping",
+    desc: "Suction cups lift the tissue to boost blood flow and ease muscle tension.",
+  },
+  {
+    icon: "🔥",
+    title: "Fire Cupping",
+    desc: "Traditional heat-based suction that relieves deep tension and stiffness.",
   },
   {
     icon: "🖐️",
@@ -71,7 +76,7 @@ export default function Services() {
         <p className="section-eyebrow">Our Services</p>
         <h2 className="section-title">Specialized Care for Every Condition</h2>
         <p className="section-sub">
-          12 evidence-based treatments — at the clinic or in your home.
+          13 evidence-based treatments — at the clinic or in your home.
         </p>
 
         {/* Cards grid */}

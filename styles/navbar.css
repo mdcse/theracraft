@@ -5,8 +5,45 @@
   position: sticky;   /* stays at top while scrolling */
   top: 0;
   z-index: 50;        /* sits above other content */
-  background: var(--color-white);
-  box-shadow: var(--shadow-sm);
+  background: var(--navbar-bg);
+  backdrop-filter: blur(6px);          /* frosted-glass (light blur = cheaper) */
+  -webkit-backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Logo badge chip — swaps the correct logo per theme.
+   Light mode: the light badge on a transparent chip (its white blends away).
+   Dark mode:  the dark icon on a dark chip (its black blends away). */
+.logo-chip {
+  width: 58px;
+  height: 58px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: transparent; /* no circle/ring around the logo */
+}
+.logo-img {
+  grid-area: 1 / 1; /* stack both images in the same cell */
+  width: 58px;
+  height: 58px;
+  object-fit: cover;
+}
+.logo-img.light {
+  object-fit: contain; /* transparent icon — no blend needed */
+}
+.logo-img.dark {
+  display: none;
+  transform: scale(1.12);   /* enlarge the figure a touch */
+  mix-blend-mode: screen;   /* drops the black bg on the dark chip */
+}
+
+/* Dark theme: show the dark icon instead of the light badge */
+:root[data-theme="dark"] .logo-img.light { display: none; }
+:root[data-theme="dark"] .logo-img.dark { display: block; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .logo-img.light { display: none; }
+  :root:not([data-theme="light"]) .logo-img.dark { display: block; }
 }
 
 .navbar-inner {
@@ -19,19 +56,55 @@
 }
 
 .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* space between logo mark and wordmark */
+}
+
+.logo-text {
   font-family: var(--font-heading);
-  font-size: 24px;
+  font-size: 23px;
   font-weight: 700;
+  line-height: 1.05;
+}
+
+/* Two-tone wordmark to match the logo: "Thera" navy, "Craft" sky-blue */
+.logo-name .lg-thera {
   color: var(--color-primary);
+}
+.logo-name .lg-craft {
+  color: var(--color-primary-light);
 }
 
 .logo-sub {
-  display: block; /* forces it onto its own line */
+  display: block;
   font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 400;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
   color: var(--color-text-mid);
+  margin-top: 1px;
 }
+
+/* Theme toggle button */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  color: var(--color-primary);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  transition: background 0.2s, color 0.2s;
+}
+.theme-toggle:hover {
+  color: var(--color-teal);
+  border-color: var(--color-teal);
+}
+
 
 .nav-links {
   display: flex;
@@ -52,16 +125,24 @@
   gap: 12px;
 }
 
+/* Mobile actions group (theme toggle + hamburger) */
+.mobile-actions {
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
 /* Hamburger hidden on desktop */
 .hamburger {
   display: none;
   color: var(--color-primary);
+  padding: 6px;
 }
 
 /* Mobile dropdown menu */
 .mobile-menu {
-  background: var(--color-white);
-  border-top: 1px solid var(--color-primary-pale);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
   padding: 16px 24px;
 }
 
@@ -89,7 +170,21 @@
   .nav-buttons {
     display: none; /* hide desktop links/buttons */
   }
+  .mobile-actions {
+    display: flex; /* show theme toggle + hamburger */
+  }
   .hamburger {
     display: block; /* show hamburger instead */
+  }
+  .logo-chip {
+    width: 50px;
+    height: 50px;
+  }
+  .logo-img {
+    width: 50px;
+    height: 50px;
+  }
+  .logo-text {
+    font-size: 20px;
   }
 }

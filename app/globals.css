@@ -3,27 +3,95 @@
    Change any color here → whole site updates
    ============================================ */
 :root {
-  /* From the TheraCraft logo */
-  --color-primary: #1d3c8f;        /* deep blue — "Thera" */
+  color-scheme: light;
+
+  /* ---- BRAND COLORS (sampled from the TheraCraft logo) ---- */
+  --color-primary: #12318c;        /* deep royal navy — "Thera" */
   --color-primary-mid: #2563c4;    /* medium blue — links, hovers */
-  --color-primary-light: #3aa5df;  /* sky blue — "Craft" */
-  --color-primary-pale: #dff0fa;   /* pale sky — badges, card bg */
-  --color-navy: #12265c;           /* darkest — footer */
+  --color-primary-light: #18a2db;  /* bright azure — "Craft" */
+  --color-navy: #0e2456;           /* footer (stays dark in both themes) */
   --color-teal: #1799a9;           /* teal — spine figure, CTA buttons */
-  --color-white: #ffffff;
-  --color-off-white: #f6fbfd;
-  --color-text-dark: #0e2149;
-  --color-text-mid: #3c4f7a;
-  --color-text-light: #6b80ab;
+  --color-teal-deep: #127b89;      /* deeper teal — gradients */
+  --color-warm: #f6a94a;           /* warm amber accent */
+  --color-warm-pale: #fdf1e0;
+  --color-white: #ffffff;          /* LITERAL white — button/label text only */
   --color-success: #16a34a;
   --color-whatsapp: #25d366;
 
-  --shadow-sm: 0 4px 24px rgba(29, 60, 143, 0.10);
-  --shadow-lg: 0 12px 40px rgba(29, 60, 143, 0.16);
+  /* ---- ROLE TOKENS (these flip in dark mode) ---- */
+  --bg: #ffffff;                   /* base section background */
+  --bg-alt: #e8f3f4;               /* alternating (mist) section */
+  --surface: #ffffff;              /* cards, navbar */
+  --surface-2: #f3f9fa;            /* subtle cards, form inputs */
+  --tint: #e3f1fb;                 /* icon / badge fills */
+  --border: #d8e9f6;               /* card & input borders */
+  --text: #0e2149;                 /* headings + body */
+  --text-muted: #43567f;           /* secondary text */
+  --text-faint: #6b80ab;           /* muted text */
+  --navbar-bg: rgba(255, 255, 255, 0.9);
+  --hero-blob-1: rgba(24, 162, 219, 0.22); /* decorative hero glow */
+  --hero-blob-2: rgba(23, 153, 169, 0.18);
 
-  /* Fonts come from layout.js (next/font) */
+  /* ---- Backward-compatible aliases (old names → role tokens) ---- */
+  --color-primary-pale: var(--border);
+  --color-mist: var(--bg-alt);
+  --color-off-white: var(--surface-2);
+  --color-text-dark: var(--text);
+  --color-text-mid: var(--text-muted);
+  --color-text-light: var(--text-faint);
+
+  --shadow-sm: 0 4px 18px rgba(18, 38, 92, 0.07);
+  --shadow-lg: 0 18px 46px rgba(18, 38, 92, 0.14);
+
   --font-heading: var(--font-playfair);
   --font-body: var(--font-dm-sans);
+}
+
+/* ---- DARK THEME palette (shared by auto + manual toggle) ---- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-primary: #5cb8ea;
+    --color-primary-mid: #57b0e8;
+    --color-primary-light: #7cc8ef;
+    --color-teal: #2bb7c7;
+    --bg: #0a1524;
+    --bg-alt: #0f2036;
+    --surface: #14263f;
+    --surface-2: #101f35;
+    --tint: #183453;
+    --border: #294066;
+    --text: #eaf1fb;
+    --text-muted: #a7b8d8;
+    --text-faint: #7e93bd;
+    --navbar-bg: rgba(10, 21, 36, 0.82);
+    --hero-blob-1: rgba(24, 162, 219, 0.22);
+    --hero-blob-2: rgba(43, 183, 199, 0.20);
+    --shadow-sm: 0 4px 18px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.5);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-primary: #5cb8ea;
+  --color-primary-mid: #57b0e8;
+  --color-primary-light: #7cc8ef;
+  --color-teal: #2bb7c7;
+  --bg: #0a1524;
+  --bg-alt: #0f2036;
+  --surface: #14263f;
+  --surface-2: #101f35;
+  --tint: #183453;
+  --border: #294066;
+  --text: #eaf1fb;
+  --text-muted: #a7b8d8;
+  --text-faint: #7e93bd;
+  --navbar-bg: rgba(10, 21, 36, 0.82);
+  --hero-blob-1: rgba(24, 162, 219, 0.22);
+  --hero-blob-2: rgba(43, 183, 199, 0.20);
+  --shadow-sm: 0 4px 18px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.5);
 }
 
 /* ============================================
@@ -41,13 +109,36 @@ html {
 }
 
 body {
-  background: var(--color-white);
-  color: var(--color-text-dark);
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--font-body);
+  transition: background 0.3s ease, color 0.3s ease; /* smooth theme switch */
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
+}
+
+/* ============================================
+   SCROLL REVEAL (added by components/ScrollReveal.js)
+   Elements fade + slide up as they enter the viewport
+   ============================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.reveal-in {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 a {
@@ -94,4 +185,35 @@ button {
 .btn-outline {
   border: 2px solid var(--color-primary-mid);
   color: var(--color-primary-mid);
+}
+
+/* ============================================
+   4. SHARED SECTION HEADINGS (reused everywhere)
+   ============================================ */
+.section-eyebrow {
+  color: var(--color-teal);
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px; /* spaced-out caps = refined look */
+  margin-bottom: 10px;
+}
+
+.section-title {
+  font-size: 34px;
+  color: var(--color-text-dark);
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+.section-sub {
+  color: var(--color-text-mid);
+  font-size: 16px;
+  margin-bottom: 48px;
+}
+
+@media (max-width: 600px) {
+  .section-title {
+    font-size: 27px;
+  }
 }

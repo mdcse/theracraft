@@ -2,7 +2,7 @@
    SERVICES styles (used by components/Services.js)
    ============================================ */
 .services {
-  background: var(--color-white);
+  background: var(--bg);
   padding: 80px 24px;
 }
 
@@ -12,27 +12,7 @@
   text-align: center;
 }
 
-/* Section heading pattern (reused visual language) */
-.section-eyebrow {
-  color: var(--color-teal);
-  font-weight: 600;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 2px; /* spaced-out caps = refined look */
-  margin-bottom: 10px;
-}
-
-.section-title {
-  font-size: 34px;
-  color: var(--color-text-dark);
-  margin-bottom: 12px;
-}
-
-.section-sub {
-  color: var(--color-text-mid);
-  font-size: 16px;
-  margin-bottom: 48px;
-}
+/* (Section heading styles are shared — see globals.css) */
 
 /* Responsive grid: 4 columns that shrink automatically */
 .services-grid {
@@ -54,7 +34,7 @@
   transform: translateY(-5px); /* card floats up */
   box-shadow: var(--shadow-lg);
   border-color: var(--color-teal);
-  background: var(--color-white);
+  background: var(--surface);
 }
 
 .service-icon {
@@ -93,12 +73,6 @@
 @media (max-width: 600px) {
   .services {
     padding: 56px 20px;
-  }
-  .section-title {
-    font-size: 27px;
-  }
-  .section-sub {
-    margin-bottom: 32px;
   }
   .services-grid {
     grid-template-columns: 1fr;

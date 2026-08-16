@@ -2,12 +2,33 @@
    HERO styles (used by components/Hero.js)
    ============================================ */
 .hero {
-  /* soft gradient: pale sky at top fading to off-white */
-  background: linear-gradient(180deg, var(--color-primary-pale) 0%, var(--color-off-white) 100%);
-  padding: 72px 24px 80px; /* natural height — no forced full screen */
+  position: relative;
+  overflow: hidden;
+  /* two coloured glows layered over a soft themed gradient — adds life */
+  background:
+    radial-gradient(120% 90% at 88% -5%, var(--hero-blob-1) 0%, transparent 45%),
+    radial-gradient(90% 85% at -5% 105%, var(--hero-blob-2) 0%, transparent 50%),
+    linear-gradient(165deg, var(--tint) 0%, var(--bg-alt) 52%, var(--bg) 100%);
+  padding: 84px 24px 92px;
+}
+
+/* soft floating accent ring, purely decorative */
+.hero::after {
+  content: "";
+  position: absolute;
+  top: 12%;
+  left: 46%;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--hero-blob-2) 0%, transparent 65%);
+  filter: blur(10px);
+  pointer-events: none;
 }
 
 .hero-inner {
+  position: relative;
+  z-index: 1; /* content sits above the decorative glows */
   max-width: 1060px;
   margin: 0 auto;
   display: flex;
@@ -20,13 +41,40 @@
   max-width: 560px; /* stops text drifting into the empty middle */
 }
 
+/* On-load entrance: hero content rises in, staggered */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-text > * {
+    opacity: 0;
+    animation: hero-rise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  }
+  .hero-badge { animation-delay: 0.05s; }
+  .hero-text h1 { animation-delay: 0.15s; }
+  .hero-tagline { animation-delay: 0.28s; }
+  .hero-buttons { animation-delay: 0.4s; }
+  .hero-stats { animation-delay: 0.52s; }
+  .doctor-card {
+    opacity: 0;
+    animation: hero-rise 0.8s 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  }
+}
+
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
 .hero-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--color-white);
+  background: var(--surface);
   color: var(--color-primary);
-  border: 1px solid var(--color-primary-pale);
+  border: 1px solid var(--border);
   padding: 8px 16px;
   border-radius: 999px; /* fully rounded = pill shape */
   font-size: 14px;
@@ -40,6 +88,18 @@
   height: 8px;
   border-radius: 50%;
   background: var(--color-teal);
+  box-shadow: 0 0 0 0 rgba(23, 153, 169, 0.5);
+  animation: badge-pulse 2s infinite; /* subtle "we're active" pulse */
+}
+
+@keyframes badge-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(23, 153, 169, 0.45); }
+  70% { box-shadow: 0 0 0 7px rgba(23, 153, 169, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(23, 153, 169, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge-dot { animation: none; }
 }
 
 .hero-text h1 {
@@ -50,7 +110,11 @@
 }
 
 .highlight {
-  color: var(--color-primary-mid);
+  /* lively sky → teal gradient text */
+  background: linear-gradient(95deg, var(--color-primary-light) 0%, var(--color-teal) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   white-space: nowrap; /* "Move Better" always stays on one line */
 }
 
@@ -89,7 +153,7 @@
 
 /* Doctor card */
 .doctor-card {
-  background: var(--color-white);
+  background: var(--surface);
   border-radius: 16px;
   border-top: 4px solid var(--color-teal); /* brand accent strip */
   box-shadow: var(--shadow-lg);
@@ -99,18 +163,16 @@
   flex-shrink: 0; /* never gets squeezed by the text column */
 }
 
-.doctor-avatar {
-  font-family: var(--font-heading);
-  font-size: 38px;
-  font-weight: 700;
-  color: var(--color-white);
-  width: 100px;
-  height: 100px;
-  line-height: 100px;      /* centers initials vertically */
-  margin: 0 auto 20px;     /* centers the circle horizontally */
-  /* brand gradient: navy into teal */
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-teal) 100%);
-  border-radius: 50%;      /* perfect circle */
+.doctor-photo {
+  width: 100%;
+  height: 240px;
+  margin: 0 auto 20px;
+  border-radius: 14px;
+  /* Her photo sits on top; the brand gradient shows until the file is added,
+     so there's never a broken-image icon. */
+  background: url("/dr-guriya.jpg") center 22% / cover no-repeat,
+    linear-gradient(135deg, var(--color-primary) 0%, var(--color-teal) 100%);
+  box-shadow: 0 6px 18px rgba(18, 38, 92, 0.14);
 }
 
 .doctor-card h3 {
@@ -118,10 +180,18 @@
   color: var(--color-primary);
 }
 
+.doctor-role {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 15px;
+  margin-top: 4px;
+}
+
 .doctor-degree {
   color: var(--color-teal);
   font-weight: 500;
-  margin: 4px 0 12px;
+  font-size: 14px;
+  margin: 2px 0 12px;
 }
 
 .doctor-note {
