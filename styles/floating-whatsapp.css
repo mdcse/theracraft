@@ -1,0 +1,51 @@
+/* ============================================
+   FLOATING WHATSAPP BUTTON styles
+   ============================================ */
+.floating-whatsapp {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 60;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-whatsapp);
+  color: var(--color-white);
+  border-radius: 50%;
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+  animation: wa-bounce 2.5s ease-in-out infinite; /* gentle bounce */
+  transition: transform 0.2s;
+}
+
+.floating-whatsapp:hover {
+  transform: scale(1.08);
+}
+
+/* Bounce keyframes */
+@keyframes wa-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Slightly smaller / tighter on phones */
+@media (max-width: 600px) {
+  .floating-whatsapp {
+    bottom: 18px;
+    right: 18px;
+    width: 52px;
+    height: 52px;
+  }
+}
+
+/* Respect users who prefer no motion */
+@media (prefers-reduced-motion: reduce) {
+  .floating-whatsapp {
+    animation: none;
+  }
+}

@@ -21,9 +21,9 @@ export default function Hero() {
           </p>
 
           <div className="hero-buttons">
-            <a href="#contact" className="btn btn-teal">Book Appointment</a>
+            <a href="#book" className="btn btn-teal">Book Appointment</a>
             <a
-              href="https://wa.me/919145974904"
+              href="https://wa.me/917204688546"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-whatsapp"
@@ -42,7 +42,7 @@ export default function Hero() {
               <span>Happy Patients</span>
             </div>
             <div className="stat">
-              <strong>12</strong>
+              <strong>13</strong>
               <span>Specialized Services</span>
             </div>
             <div className="stat">
@@ -54,9 +54,13 @@ export default function Hero() {
 
         {/* Right side: doctor card */}
         <div className="doctor-card">
-          <div className="doctor-avatar">GK</div>
+          <div
+            className="doctor-photo"
+            role="img"
+            aria-label="Portrait of Dr. Guriya Kumari"
+          ></div>
           <h3>Dr. Guriya Kumari</h3>
-          <p className="doctor-degree">B.PTh, MIAP</p>
+          <p className="doctor-role">Physiotherapist</p>
           <p className="doctor-note">
             Physio at Your Doorstep — clinic &amp; home visits across Bengaluru
           </p>
