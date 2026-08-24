@@ -15,7 +15,7 @@ export default function About() {
         <div className="about-visual">
           <div className="about-card">
             <div className="about-avatar">GK</div>
-            <h3>Dr. Guriya Kumari</h3>
+            <h3>Dr. Guriya Kumari (PT)</h3>
             <p className="about-role">Founder &amp; Lead Physiotherapist</p>
             <ul className="about-creds">
               {credentials.map((c) => (

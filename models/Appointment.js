@@ -39,6 +39,11 @@ const AppointmentSchema = new mongoose.Schema(
       type: String, // stored as YYYY-MM-DD from the form
       required: [true, "Preferred date is required"],
     },
+    time: {
+      type: String, // stored as the slot label, e.g. "10:45 AM"
+      required: [true, "Preferred time is required"],
+      trim: true,
+    },
     message: {
       type: String,
       trim: true,
@@ -56,6 +61,17 @@ const AppointmentSchema = new mongoose.Schema(
     },
   },
   { timestamps: true } // adds createdAt / updatedAt automatically
+);
+
+/**
+ * One booking per date+time — enforced by the database itself, so two people
+ * submitting the same slot at the same instant can't both get in.
+ * Partial index: only applies to documents that actually have a `time`,
+ * which skips older bookings saved before time slots existed.
+ */
+AppointmentSchema.index(
+  { date: 1, time: 1 },
+  { unique: true, partialFilterExpression: { time: { $exists: true } } }
 );
 
 // Reuse the model if it's already been compiled (Next.js hot reload safe).

@@ -59,7 +59,7 @@ export default function Hero() {
             role="img"
             aria-label="Portrait of Dr. Guriya Kumari"
           ></div>
-          <h3>Dr. Guriya Kumari</h3>
+          <h3>Dr. Guriya Kumari (PT)</h3>
           <p className="doctor-role">Physiotherapist</p>
           <p className="doctor-note">
             Physio at Your Doorstep — clinic &amp; home visits across Bengaluru

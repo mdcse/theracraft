@@ -1,0 +1,277 @@
+/* Availability calendar used by the booking form.
+   Built entirely on role tokens (--surface, --border, --text …) so it
+   follows the site's light/dark theme without any extra rules. */
+
+/* ---- closed state: a field that looks like the other inputs ---- */
+.cal-wrap {
+  position: relative;
+}
+
+.cal-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 15px;
+  text-align: left;
+  color: var(--text-faint); /* placeholder tone until a date is chosen */
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* match the other inputs exactly — same colour AND same weight, so the date
+   doesn't sit heavier than the fields above and below it */
+.cal-trigger.has-value {
+  color: var(--text);
+}
+
+.cal-trigger:hover,
+.cal-trigger[aria-expanded="true"] {
+  border-color: var(--color-teal);
+}
+
+.cal-trigger:focus-visible {
+  outline: none;
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px rgba(23, 153, 169, 0.15);
+}
+
+.cal-trigger.is-invalid {
+  border-color: #dc2626;
+}
+
+.cal-trigger-icon {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  color: var(--color-teal);
+}
+
+/* ---- open state: the popover ---- */
+.cal {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 6px);
+  left: 0;
+  width: min(340px, 100%);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  padding: 12px;
+  user-select: none;
+  animation: cal-in 0.14s ease-out;
+}
+
+@keyframes cal-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cal {
+    animation: none;
+  }
+}
+
+/* ---- header: ‹ August 2026 › ---- */
+.cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.cal-month {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.cal-nav {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--color-teal);
+  /* the popover is already --surface, so a filled button here would vanish;
+     keep it as a quiet glyph that fills in on hover */
+  background: transparent;
+  border: 1.5px solid transparent;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+
+.cal-nav:hover:not(:disabled) {
+  background: var(--tint);
+}
+
+.cal-nav:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ---- 7-column grid shared by weekday labels and day cells ---- */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-weekdays {
+  margin-bottom: 4px;
+}
+
+.cal-weekday {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding-bottom: 4px;
+}
+
+.cal-days.is-loading {
+  opacity: 0.55; /* dimmed while a month's bookings load */
+  pointer-events: none;
+}
+
+.cal-blank {
+  /* keeps the 1st under the right weekday */
+}
+
+/* ---- one day ---- */
+.cal-day {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  min-height: 46px;
+  padding: 4px 2px;
+  font-family: var(--font-body);
+  /* no fill and no border by default — 30 outlined boxes read as clutter and
+     fight the form's calm white-on-mist look */
+  background: transparent;
+  border: 1.5px solid transparent;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background 0.16s, border-color 0.16s;
+}
+
+.cal-day:hover:not(:disabled) {
+  background: var(--tint); /* same pale blue as the info-card icon tiles */
+}
+
+.cal-day:focus-visible {
+  outline: none;
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px rgba(23, 153, 169, 0.25);
+}
+
+.cal-daynum {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+/* how many slots are free — plain teal text, not a filled chip, so a full
+   month doesn't turn into a grid of loud badges */
+.cal-free {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-teal);
+  white-space: nowrap;
+}
+
+/* today gets a ring, so it reads even when unselected */
+.cal-day.is-today .cal-daynum {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* selected day uses the exact .btn-teal treatment from globals.css,
+   so it reads as the same accent as the Request Appointment button */
+.cal-day.is-selected,
+.cal-day.is-selected:hover {
+  background: var(--color-teal);
+  border-color: var(--color-teal);
+}
+
+.cal-day.is-selected .cal-daynum,
+.cal-day.is-selected .cal-free {
+  color: var(--color-white);
+}
+
+/* full or past — visibly inert, no hover, not focusable as a choice */
+.cal-day.is-disabled {
+  background: transparent;
+  border-color: transparent;
+  cursor: not-allowed;
+}
+
+.cal-day.is-disabled .cal-daynum {
+  color: var(--text-faint);
+  opacity: 0.5;
+  font-weight: 500;
+}
+
+.cal-legend {
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid var(--border);
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--text-faint);
+}
+
+/* the teal number under each date is the legend's subject */
+.cal-legend b {
+  color: var(--color-teal);
+  font-weight: 700;
+}
+
+/* ---- phones: tighter cells, drop the word "left" to keep the number ---- */
+@media (max-width: 480px) {
+  .cal {
+    padding: 10px 8px;
+  }
+  .cal-grid {
+    gap: 3px;
+  }
+  .cal-day {
+    min-height: 46px;
+    border-radius: 8px;
+  }
+  .cal-daynum {
+    font-size: 13px;
+  }
+  .cal-free {
+    font-size: 9px;
+    padding: 2px 4px;
+  }
+  .cal-free-word {
+    display: none; /* "4 left" → "4" */
+  }
+  .cal-weekday {
+    font-size: 10px;
+  }
+}
