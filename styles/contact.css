@@ -154,6 +154,12 @@
   font-size: 12.5px;
 }
 
+/* neutral note (e.g. "no slots left") — informational, not an error */
+.field-hint {
+  color: var(--color-text-light);
+  font-size: 12.5px;
+}
+
 .form-error-msg {
   background: #fef2f2;
   color: #dc2626;

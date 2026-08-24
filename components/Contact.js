@@ -1,7 +1,14 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import "@/styles/contact.css";
+import CalendarPicker from "./CalendarPicker";
+import {
+  TIME_SLOTS,
+  availableSlotsOn,
+  istCurrentMonth,
+  isSlotPast,
+} from "@/lib/slots";
 
 const SERVICES = [
   "Orthopedic Rehabilitation",
@@ -25,6 +32,7 @@ const EMPTY_FORM = {
   service: "",
   visitType: "Home Visit", // only home visits available currently
   date: "",
+  time: "",
   message: "",
 };
 
@@ -32,13 +40,53 @@ export default function Contact() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | sending | success | error
+  // { "2026-08-27": ["07:00 AM", ...] } for the month on screen
+  const [bookedByDate, setBookedByDate] = useState({});
+  const [viewMonth, setViewMonth] = useState(istCurrentMonth());
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const formRef = useRef(null); // 3D tilt target (updated directly, no re-render)
+
+  // Fetch a whole month at once. The calendar needs every day's counts anyway,
+  // and the time dropdown just reads its date out of the same map — so picking
+  // a date costs no extra request.
+  useEffect(() => {
+    let stale = false; // if the month changes mid-flight, drop the old reply
+    setLoadingSlots(true);
+
+    fetch(`/api/appointments?month=${viewMonth}`)
+      .then((res) => (res.ok ? res.json() : { booked: {} }))
+      .then((data) => {
+        // Merge rather than replace: browsing to another month must not throw
+        // away what we know about the month the patient already picked from.
+        if (!stale) setBookedByDate((prev) => ({ ...prev, ...(data.booked || {}) }));
+      })
+      .catch(() => {
+        // Offline? Keep what we have; the server still decides on submit.
+      })
+      .finally(() => {
+        if (!stale) setLoadingSlots(false);
+      });
+
+    return () => {
+      stale = true;
+    };
+  }, [viewMonth]);
+
+  // If the chosen slot stops being available — someone else booked it, or it
+  // simply passed — quietly un-choose it so the form can't submit a dead slot.
+  useEffect(() => {
+    if (!form.time) return;
+    const stillFree = availableSlotsOn(form.date, bookedByDate[form.date]);
+    if (!stillFree.includes(form.time))
+      setForm((prev) => ({ ...prev, time: "" }));
+  }, [form.date, form.time, bookedByDate]);
 
   // Tilt the form toward the cursor for a subtle 3D effect (desktop only).
   // We write the transform straight to the DOM so React doesn't re-render.
   const handleTilt = (e) => {
     const el = formRef.current;
-    if (!el) return;
+    if (!el || calendarOpen) return; // frozen while the date popover is open
     const r = el.getBoundingClientRect();
     const px = (e.clientX - r.left) / r.width; // 0 → 1 across
     const py = (e.clientY - r.top) / r.height; // 0 → 1 down
@@ -69,6 +117,9 @@ export default function Contact() {
       next.email = "Enter a valid email address.";
     if (!form.service) next.service = "Please select a service.";
     if (!form.date) next.date = "Please pick a preferred date.";
+    if (!form.time) next.time = "Please pick a time slot.";
+    else if (isSlotPast(form.date, form.time))
+      next.time = "That time has already passed. Please pick a later slot.";
     if (form.message.length > 300) next.message = "Message must be under 300 characters.";
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -85,6 +136,26 @@ export default function Contact() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+      // 409 = the slot got taken while they were filling the form.
+      // Mark it booked, clear their choice, and ask for another — don't
+      // throw them into the generic error state.
+      if (res.status === 409) {
+        const data = await res.json().catch(() => ({}));
+        // Record it as taken so both the dropdown and the calendar count update.
+        setBookedByDate((prev) => {
+          const forDate = prev[form.date] || [];
+          if (forDate.includes(form.time)) return prev;
+          return { ...prev, [form.date]: [...forDate, form.time] };
+        });
+        setForm((prev) => ({ ...prev, time: "" }));
+        setErrors((prev) => ({
+          ...prev,
+          time: data.error || "That slot was just booked. Please pick another.",
+        }));
+        setStatus("idle");
+        return;
+      }
+
       if (!res.ok) throw new Error("Request failed");
       setStatus("success");
       setForm(EMPTY_FORM); // clear the form on success
@@ -93,7 +164,10 @@ export default function Contact() {
     }
   };
 
-  const today = new Date().toISOString().split("T")[0]; // block past dates
+  // Only offer what's genuinely open. Slots already booked or already gone by
+  // are left out entirely rather than shown greyed out — a booking form should
+  // present choices, not advertise what the patient can't have.
+  const availableSlots = availableSlotsOn(form.date, bookedByDate[form.date]);
 
   return (
     <section id="contact" className="contact">
@@ -167,7 +241,7 @@ export default function Contact() {
           ) : (
             <form className="booking-form" onSubmit={handleSubmit} noValidate>
               <div className="field">
-                <label htmlFor="name">Full Name *</label>
+                <label htmlFor="name">Name *</label>
                 <input
                   id="name"
                   name="name"
@@ -225,22 +299,58 @@ export default function Contact() {
               </div>
 
               <div className="field">
-                <label htmlFor="date">Preferred Date *</label>
-                <input
-                  id="date"
-                  name="date"
-                  type="date"
-                  min={today}
+                <label>Preferred Date *</label>
+                <CalendarPicker
                   value={form.date}
-                  onChange={handleChange}
-                  onClick={(e) => {
-                    // open the calendar when clicking anywhere in the field
-                    try {
-                      e.currentTarget.showPicker();
-                    } catch (_) {}
+                  onChange={(date) => {
+                    setForm((prev) => ({ ...prev, date }));
+                    setErrors((prev) => ({ ...prev, date: "" }));
+                  }}
+                  month={viewMonth}
+                  onMonthChange={setViewMonth}
+                  bookedByDate={bookedByDate}
+                  loading={loadingSlots}
+                  invalid={!!errors.date}
+                  onOpenChange={(isOpen) => {
+                    setCalendarOpen(isOpen);
+                    if (isOpen) resetTilt(); // settle the card before it opens
                   }}
                 />
                 {errors.date && <span className="field-error">{errors.date}</span>}
+              </div>
+
+              <div className="field">
+                <label htmlFor="time">Preferred Time *</label>
+                <select
+                  id="time"
+                  name="time"
+                  value={form.time}
+                  onChange={handleChange}
+                  disabled={!form.date || loadingSlots}
+                >
+                  <option value="">
+                    {!form.date
+                      ? "Pick a date above"
+                      : loadingSlots
+                      ? "Checking availability…"
+                      : "Select a time slot"}
+                  </option>
+                  {/* Every slot stays visible so the day's shape is clear;
+                      the unavailable ones are simply not selectable. */}
+                  {TIME_SLOTS.map((t) => (
+                    <option key={t} value={t} disabled={!availableSlots.includes(t)}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+                {form.date && !loadingSlots && !errors.time && (
+                  <span className="field-hint">
+                    {availableSlots.length === 0
+                      ? "No slots left on this date — please choose another day."
+                      : "Greyed-out times are already booked or have passed."}
+                  </span>
+                )}
+                {errors.time && <span className="field-error">{errors.time}</span>}
               </div>
 
               <div className="field">
