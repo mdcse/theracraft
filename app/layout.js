@@ -1,6 +1,7 @@
 import { Playfair_Display, DM_Sans } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import ScrollReveal from "@/components/ScrollReveal";
+import SectionTransition from "@/components/SectionTransition";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -52,7 +53,7 @@ const jsonLd = {
   image: "https://theracraftrehab.com/logo.png",
   "@id": "https://theracraftrehab.com",
   url: "https://theracraftrehab.com",
-  telephone: "+919145974904",
+  telephone: "+917204688546",
   priceRange: "₹₹",
   medicalSpecialty: "Physiotherapy",
   address: {
@@ -110,6 +111,7 @@ export default function RootLayout({ children }) {
         />
         <Navbar />
         <ScrollReveal />
+        <SectionTransition />
         {children}
       </body>
     </html>

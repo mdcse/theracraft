@@ -9,21 +9,43 @@ import {
   istCurrentMonth,
   isSlotPast,
 } from "@/lib/slots";
+import SERVICES from "@/lib/services";
 
-const SERVICES = [
-  "Orthopedic Rehabilitation",
-  "Sports Injury Rehabilitation",
-  "ACL / TKR Post-Operative Rehab",
-  "Dry Needling Therapy",
-  "Cupping Therapy",
-  "Taping & Myofascial Release (MFR)",
-  "Back Pain & Neck Pain Management",
-  "Sciatica & Radiculopathy",
-  "Paralysis & Neurological Rehab",
-  "Antenatal & Postnatal Care",
-  "Geriatric Rehabilitation",
-  "Home Visit Physiotherapy",
-];
+// Dropdown choices: every service, plus "Other" for anything not listed.
+const SERVICE_OPTIONS = [...SERVICES.map((s) => s.title), "Other"];
+
+// Bookings land in Dr. Guriya's WhatsApp — the patient sends it from their own.
+const CLINIC_WHATSAPP = "917204688546"; // same number as the site's other WhatsApp buttons
+
+// "2026-10-05" → "Mon, 5 Oct 2026"
+const prettyDate = (ymd) =>
+  new Date(`${ymd}T00:00:00`).toLocaleDateString("en-IN", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
+// Builds the WhatsApp link with the patient's details already typed out.
+const buildWhatsAppUrl = (f) => {
+  const lines = [
+    "Hello Dr. Guriya, I'd like to book an appointment.",
+    "",
+    `*Name:* ${f.name.trim()}`,
+    `*Phone:* ${f.phone.trim()}`,
+    f.email.trim() ? `*Email:* ${f.email.trim()}` : null,
+    `*Service:* ${f.service}`,
+    `*Visit Type:* ${f.visitType}`,
+    `*Date:* ${prettyDate(f.date)}`,
+    `*Time:* ${f.time}`,
+    f.message.trim() ? `*Message:* ${f.message.trim()}` : null,
+    "",
+    "— Sent from theracraftrehab.com",
+  ];
+  // null = optional field left empty, so leave that line out
+  const text = lines.filter((l) => l !== null).join("\n");
+  return `https://api.whatsapp.com/send?phone=${CLINIC_WHATSAPP}&text=${encodeURIComponent(text)}`;
+};
 
 const EMPTY_FORM = {
   name: "",
@@ -45,33 +67,36 @@ export default function Contact() {
   const [viewMonth, setViewMonth] = useState(istCurrentMonth());
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0); // bump to re-pull the month
   const formRef = useRef(null); // 3D tilt target (updated directly, no re-render)
 
   // Fetch a whole month at once. The calendar needs every day's counts anyway,
   // and the time dropdown just reads its date out of the same map — so picking
   // a date costs no extra request.
-  useEffect(() => {
-    let stale = false; // if the month changes mid-flight, drop the old reply
-    setLoadingSlots(true);
-
-    fetch(`/api/appointments?month=${viewMonth}`)
-      .then((res) => (res.ok ? res.json() : { booked: {} }))
-      .then((data) => {
-        // Merge rather than replace: browsing to another month must not throw
-        // away what we know about the month the patient already picked from.
-        if (!stale) setBookedByDate((prev) => ({ ...prev, ...(data.booked || {}) }));
-      })
-      .catch(() => {
-        // Offline? Keep what we have; the server still decides on submit.
-      })
-      .finally(() => {
-        if (!stale) setLoadingSlots(false);
-      });
-
-    return () => {
-      stale = true;
-    };
-  }, [viewMonth]);
+  // DISABLED for now: booked slots are no longer greyed out on the calendar.
+  // Uncomment to bring it back.
+  // useEffect(() => {
+  //   let stale = false; // if the month changes mid-flight, drop the old reply
+  //   setLoadingSlots(true);
+  //
+  //   fetch(`/api/appointments?month=${viewMonth}`)
+  //     .then((res) => (res.ok ? res.json() : { booked: {} }))
+  //     .then((data) => {
+  //       // Merge rather than replace: browsing to another month must not throw
+  //       // away what we know about the month the patient already picked from.
+  //       if (!stale) setBookedByDate((prev) => ({ ...prev, ...(data.booked || {}) }));
+  //     })
+  //     .catch(() => {
+  //       // Offline? Keep what we have; the server still decides on submit.
+  //     })
+  //     .finally(() => {
+  //       if (!stale) setLoadingSlots(false);
+  //     });
+  //
+  //   return () => {
+  //     stale = true;
+  //   };
+  // }, [viewMonth, refreshKey]);
 
   // If the chosen slot stops being available — someone else booked it, or it
   // simply passed — quietly un-choose it so the form can't submit a dead slot.
@@ -157,11 +182,28 @@ export default function Contact() {
       }
 
       if (!res.ok) throw new Error("Request failed");
-      setStatus("success");
-      setForm(EMPTY_FORM); // clear the form on success
+
+      // DISABLED along with the calendar's booked-slot greying (see above).
+      // const justBooked = { date: form.date, time: form.time };
+      // setBookedByDate((prev) => {
+      //   const forDate = prev[justBooked.date] || [];
+      //   if (forDate.includes(justBooked.time)) return prev;
+      //   return { ...prev, [justBooked.date]: [...forDate, justBooked.time] };
+      // });
+      // setRefreshKey((k) => k + 1);
     } catch (err) {
-      setStatus("error"); // keep form data so the user can retry
+      // Saving failed (offline, server down…). Still hand off to WhatsApp —
+      // the message reaching Dr. Guriya matters more than our database copy.
+      console.error("[booking] save failed, continuing to WhatsApp:", err);
     }
+
+    // Open WhatsApp with the message ready; the patient just taps Send.
+    // Same-tab navigation, because a new tab opened after an await gets
+    // blocked as a popup on most phones.
+    const waUrl = buildWhatsAppUrl(form);
+    setStatus("success");
+    setForm(EMPTY_FORM); // clear the form for when they come back
+    window.location.href = waUrl;
   };
 
   // Only offer what's genuinely open. Slots already booked or already gone by
@@ -194,8 +236,6 @@ export default function Contact() {
               <span className="ci-icon">📞</span>
               <div>
                 <strong>Call Us</strong>
-                <a href="tel:+919145974904">+91 9145974904</a>
-                {" · "}
                 <a href="tel:+917204688546">+91 7204688546</a>
               </div>
             </li>
@@ -229,10 +269,11 @@ export default function Contact() {
           {status === "success" ? (
             <div className="form-success">
               <div className="success-check">✓</div>
-              <h3>Appointment Requested!</h3>
+              <h3>Almost done!</h3>
               <p>
-                Thank you — we've received your request and will confirm your
-                slot shortly. For anything urgent, call +91 9145974904.
+                Please tap <strong>Send</strong> in WhatsApp so your request
+                reaches Dr. Guriya. We&apos;ll confirm your slot shortly. For anything
+                urgent, call +91 7204688546.
               </p>
               <button className="btn btn-teal" onClick={() => setStatus("idle")}>
                 Book Another
@@ -289,7 +330,7 @@ export default function Contact() {
                   onChange={handleChange}
                 >
                   <option value="">Select a service</option>
-                  {SERVICES.map((s) => (
+                  {SERVICE_OPTIONS.map((s) => (
                     <option key={s} value={s}>
                       {s}
                     </option>
@@ -347,7 +388,7 @@ export default function Contact() {
                   <span className="field-hint">
                     {availableSlots.length === 0
                       ? "No slots left on this date — please choose another day."
-                      : "Greyed-out times are already booked or have passed."}
+                      : "Greyed-out times have already passed."}
                   </span>
                 )}
                 {errors.time && <span className="field-error">{errors.time}</span>}
@@ -378,7 +419,7 @@ export default function Contact() {
                 className="btn btn-teal submit-btn"
                 disabled={status === "sending"}
               >
-                {status === "sending" ? "Sending…" : "Request Appointment"}
+                {status === "sending" ? "Opening WhatsApp…" : "Book on WhatsApp"}
               </button>
             </form>
           )}

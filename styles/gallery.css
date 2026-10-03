@@ -1,0 +1,187 @@
+/* ============================================
+   GALLERY styles (used by components/Gallery.js)
+   ============================================ */
+.gallery {
+  background: var(--bg-alt);
+  padding: 80px 24px;
+  scroll-margin-top: 80px; /* sticky navbar doesn't cover the heading */
+}
+
+.gallery-inner {
+  max-width: 1150px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Equal-size tiles: every photo is cropped to the same 4:3 box.
+   (Tap a photo to see the whole, uncropped picture.) */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  text-align: left;
+}
+
+.gallery-item {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 1px solid var(--color-primary-pale);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface);
+  cursor: zoom-in;
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+}
+
+.gallery-item:hover,
+.gallery-item:focus-visible {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-teal);
+}
+
+.gallery-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover; /* fill the box, crop the overflow */
+}
+
+/* Caption slides up over the bottom of the photo */
+.gallery-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 28px 16px 12px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-white);
+  background: linear-gradient(to top, color-mix(in srgb, var(--overlay-dark) 78%, transparent), transparent);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s, transform 0.25s;
+}
+
+.gallery-item:hover .gallery-caption,
+.gallery-item:focus-visible .gallery-caption {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Enlarged view ---------- */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000; /* above navbar and floating WhatsApp */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 64px;
+  background: color-mix(in srgb, var(--overlay-dark) 92%, transparent);
+  animation: lightbox-in 0.2s ease;
+}
+
+@keyframes lightbox-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.lightbox-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0;
+}
+
+.lightbox-figure img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100vh - 150px); /* leaves room for the caption */
+  border-radius: 10px;
+  background: var(--color-white);
+}
+
+.lightbox-figure figcaption {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.lightbox-btn {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 50%;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--color-white);
+  background: color-mix(in srgb, var(--color-white) 16%, transparent);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.lightbox-btn:hover,
+.lightbox-btn:focus-visible {
+  background: var(--color-teal);
+}
+
+.lightbox-close { top: 14px; right: 14px; font-size: 20px; }
+.lightbox-prev  { left: 10px;  top: 50%; transform: translateY(-50%); }
+.lightbox-next  { right: 10px; top: 50%; transform: translateY(-50%); }
+
+/* Tablet: 2 columns */
+@media (max-width: 1024px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile: 1 column, tighter spacing */
+@media (max-width: 600px) {
+  .gallery {
+    padding: 56px 20px;
+  }
+  /* Two small tiles per row keeps the section short on a phone */
+  .gallery-grid {
+    gap: 12px;
+  }
+  /* No hover on touch screens, so keep captions visible */
+  .gallery-caption {
+    opacity: 1;
+    transform: none;
+    padding: 22px 10px 8px;
+    font-size: 12px;
+  }
+  .lightbox {
+    padding: 64px 12px 72px;
+  }
+  /* Arrows move to the bottom so they don't cover the photo */
+  .lightbox-prev,
+  .lightbox-next {
+    top: auto;
+    bottom: 14px;
+    transform: none;
+  }
+  .lightbox-prev { left: calc(50% - 56px); }
+  .lightbox-next { right: calc(50% - 56px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lightbox { animation: none; }
+  .gallery-item,
+  .gallery-caption { transition: none; }
+}

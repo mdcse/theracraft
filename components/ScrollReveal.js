@@ -13,6 +13,7 @@ const SELECTORS = [
   ".about-visual",
   ".about-text",
   ".why-card",
+  ".gallery-item",
   ".cta-inner",
   ".faq-item",
   ".contact-info",

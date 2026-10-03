@@ -15,6 +15,7 @@
   --color-warm: #f6a94a;           /* warm amber accent */
   --color-warm-pale: #fdf1e0;
   --color-white: #ffffff;          /* LITERAL white — button/label text only */
+  --overlay-dark: #0a1524;         /* dark photo overlays (gallery caption + enlarged view) */
   --color-success: #16a34a;
   --color-whatsapp: #25d366;
 
@@ -104,8 +105,15 @@
   box-sizing: border-box; /* padding counts inside width, not extra */
 }
 
-html {
-  scroll-behavior: smooth; /* nav links glide to sections */
+/* No smooth scrolling: in-page links fade instead of gliding
+   (see components/SectionTransition.js). */
+
+main {
+  transition: opacity 0.18s ease; /* keep in sync with FADE_MS */
+}
+
+main.page-fading {
+  opacity: 0;
 }
 
 body {

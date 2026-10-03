@@ -1,18 +1,17 @@
 import "@/styles/footer.css";
+import SERVICES, { serviceId } from "@/lib/services";
 
-const services = [
-  "Orthopedic Rehabilitation",
-  "Sports Injury Rehab",
-  "Dry Needling Therapy",
-  "Back & Neck Pain",
-  "Neurological Rehab",
-  "Home Visit Physiotherapy",
-];
+// Only the ones marked footer: true in lib/services.js
+const services = SERVICES.filter((s) => s.footer).map((s) => ({
+  title: s.title,
+  href: `#${serviceId(s.title)}`,
+}));
 
 const links = [
   { label: "Home", href: "#home" },
   { label: "Services", href: "#services" },
   { label: "About", href: "#about" },
+  { label: "Gallery", href: "#gallery" },
   { label: "Testimonials", href: "#testimonials" },
   { label: "FAQ", href: "#faq" },
   { label: "Book Appointment", href: "#book" },
@@ -37,8 +36,8 @@ export default function Footer() {
           <h4>Services</h4>
           <ul>
             {services.map((s) => (
-              <li key={s}>
-                <a href="#services">{s}</a>
+              <li key={s.title}>
+                <a href={s.href}>{s.title}</a>
               </li>
             ))}
           </ul>
@@ -62,7 +61,7 @@ export default function Footer() {
           <ul className="footer-contact">
             <li>📍 PR Mineral, Muneshwara Layout, Kattigenahalli, Bengaluru 560064</li>
             <li>
-              📞 <a href="tel:+919145974904">+91 9145974904</a>
+              📞 <a href="tel:+917204688546">+91 7204688546</a>
             </li>
             <li>
               ✉️ <a href="mailto:theracraftrehab02@gmail.com">theracraftrehab02@gmail.com</a>

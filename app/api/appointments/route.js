@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
-import { notifyClinic, confirmToPatient } from "@/lib/whatsapp";
+// DISABLED: Twilio auto-messages replaced by the patient sending a pre-filled
+// WhatsApp from their own phone (see components/Contact.js).
+// import { notifyClinic, confirmToPatient } from "@/lib/whatsapp";
 import { TIME_SLOTS, isSlotPast } from "@/lib/slots";
 
 /**
@@ -100,15 +102,15 @@ export async function POST(request) {
       message: (data.message || "").trim(),
     });
 
-    // ---- Fire WhatsApp messages (don't fail the booking if these error) ----
-    try {
-      await Promise.allSettled([
-        notifyClinic(appointment),
-        confirmToPatient(appointment),
-      ]);
-    } catch (waErr) {
-      console.error("[appointments] WhatsApp send error:", waErr);
-    }
+    // ---- Twilio WhatsApp messages — DISABLED (see import above) ----
+    // try {
+    //   await Promise.allSettled([
+    //     notifyClinic(appointment),
+    //     confirmToPatient(appointment),
+    //   ]);
+    // } catch (waErr) {
+    //   console.error("[appointments] WhatsApp send error:", waErr);
+    // }
 
     return NextResponse.json(
       { ok: true, id: appointment._id },

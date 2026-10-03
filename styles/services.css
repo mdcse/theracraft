@@ -37,6 +37,33 @@
   background: var(--surface);
 }
 
+/* Leave room under the sticky navbar when a link jumps to a card */
+.service-card {
+  scroll-margin-top: 120px;
+}
+
+/* The card a visitor just jumped to (class added by SectionTransition.js) */
+.service-card.is-highlighted {
+  border-color: var(--color-teal);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px var(--color-teal), var(--shadow-lg);
+  animation: service-pulse 1s ease-out 2;
+}
+
+@keyframes service-pulse {
+  50% {
+    box-shadow:
+      0 0 0 8px color-mix(in srgb, var(--color-teal) 35%, transparent),
+      var(--shadow-lg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .service-card.is-highlighted {
+    animation: none;
+  }
+}
+
 .service-icon {
   font-size: 26px;
   width: 52px;
