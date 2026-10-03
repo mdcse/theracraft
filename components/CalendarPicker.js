@@ -185,9 +185,11 @@ export default function CalendarPicker({
 
               const label = disabled
                 ? `${prettyDate(date)}, no slots available`
-                : `${prettyDate(date)}, ${free} slot${
-                    free === 1 ? "" : "s"
-                  } available`;
+                : prettyDate(date);
+              // DISABLED: free-slot count, while bookings aren't confirmed.
+              // : `${prettyDate(date)}, ${free} slot${
+              //     free === 1 ? "" : "s"
+              //   } available`;
 
               return (
                 <button
@@ -206,20 +208,23 @@ export default function CalendarPicker({
                   title={closed ? "Closed — please call to arrange" : label}
                 >
                   <span className="cal-daynum">{day}</span>
+                  {/* DISABLED: "X left" count — a request isn't a confirmed
+                      booking, so we can't say how many slots are really free.
                   {free > 0 && (
                     <span className="cal-free">
                       {free} <span className="cal-free-word">left</span>
                     </span>
-                  )}
+                  )} */}
                 </button>
               );
             })}
           </div>
 
+          {/* DISABLED with the "X left" counts above.
           <p className="cal-legend">
             The <b>teal number</b> is how many slots are free. Greyed dates are
             full or already past.
-          </p>
+          </p> */}
         </div>
       )}
     </div>

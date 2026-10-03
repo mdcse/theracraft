@@ -14,7 +14,8 @@ export default function About() {
         {/* Left: image / credentials card */}
         <div className="about-visual">
           <div className="about-card">
-            <div className="about-avatar">GK</div>
+            <div className="about-avatar" role="img"
+            aria-label="Portrait of Dr. Guriya Kumari"></div>
             <h3>Dr. Guriya Kumari (PT)</h3>
             <p className="about-role">Founder &amp; Lead Physiotherapist</p>
             <ul className="about-creds">

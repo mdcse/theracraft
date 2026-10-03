@@ -30,7 +30,7 @@ export default function Hero() {
             >
               WhatsApp Us
             </a>
-            <a href="tel:+919145974904" className="btn btn-outline">
+            <a href="tel:+917204688546" className="btn btn-outline">
               Call Now
             </a>
           </div>
@@ -59,7 +59,7 @@ export default function Hero() {
             role="img"
             aria-label="Portrait of Dr. Guriya Kumari"
           ></div>
-          <h3>Dr. Guriya Kumari (PT)</h3>
+          <h3>Dr. Guriya Kumari (PT), <small>FIFA DFM</small></h3>
           <p className="doctor-role">Physiotherapist</p>
           <p className="doctor-note">
             Physio at Your Doorstep — clinic &amp; home visits across Bengaluru

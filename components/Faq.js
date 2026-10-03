@@ -26,7 +26,7 @@ const faqs = [
   },
   {
     q: "How do I book an appointment?",
-    a: "Use the booking form below, message us on WhatsApp, or call directly at +91 9145974904. We'll confirm your slot shortly after.",
+    a: "Use the booking form below, message us on WhatsApp, or call directly at +91 7204688546. We'll confirm your slot shortly after.",
   },
 ];
 
